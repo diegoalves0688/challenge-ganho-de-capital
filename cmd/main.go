@@ -12,9 +12,8 @@ import (
 )
 
 func main() {
-	fmt.Println("input content:")
-	serializeLines := ReadLines(bufio.NewReader(os.Stdin))
-	lines, err := ParseLines(serializeLines)
+	fmt.Println("input:")
+	lines, err := ParseLines(ReadLines(bufio.NewReader(os.Stdin)))
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +23,7 @@ func main() {
 	}
 }
 
-func ReadLines(reader *bufio.Reader) (lines []string) {
+func ReadLines(reader *bufio.Reader) (serializedLines []string) {
 	for {
 		line, err := reader.ReadString('\n')
 		if err != nil {
@@ -33,7 +32,7 @@ func ReadLines(reader *bufio.Reader) (lines []string) {
 		if len(strings.TrimSpace(line)) == 0 {
 			break
 		}
-		lines = append(lines, line)
+		serializedLines = append(serializedLines, line)
 	}
 	return
 }
@@ -44,10 +43,9 @@ func ParseLines(serializedLines []string) (lines []domain.InputLine, err error) 
 	for _, serializedLine := range serializedLines {
 		if strings.Contains(serializedLine, "]") {
 			serializedArray += serializedLine
-			fmt.Println("output element:")
 			fmt.Println(strings.Replace(serializedArray, "\n", "", -1))
 			err = json.Unmarshal([]byte(serializedArray), &segmentLineArr)
-			lines = append(lines, segmentLineArr...) 
+			lines = append(lines, segmentLineArr...)
 			serializedArray = ""
 		} else {
 			serializedArray += serializedLine
