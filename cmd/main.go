@@ -1,98 +1,50 @@
 package main
 
 import (
-	"bufio"
+	"challenge/internal/domain"
+	"challenge/internal/service"
+	"challenge/pkg"
 	"encoding/json"
 	"fmt"
-	"log"
-	"os"
-	"strings"
-
-	"github.com/diegoalves0688/challenge/internal/domain"
 )
 
 func main() {
 	fmt.Println("input:")
-	lines, err := ParseLines(ReadLines(bufio.NewReader(os.Stdin)))
+	//operations, err := pkg.ParseLines(pkg.ReadLines())
+	operationsList, err := pkg.ParseLines(pkg.ReadLines())
 	if err != nil {
 		panic(err)
 	}
 
-	for _, line := range lines {
-		fmt.Println("output: " + line.Operation)
+	/*for _, operation := range operations {
+		if operation.Type == "buy" {
+			stockAccountService.Buy(operation)
+		} else if operation.Type == "sell" {
+			stockAccountService.Sell(operation)
+		}
+	}*/
+
+	output := [][]domain.OutputLine{}
+	for _, operations := range operationsList {
+		stockAccountService := service.NewStockAccountService(&domain.StockAccount{})
+		outputLine := []domain.OutputLine{}
+		for _, operation := range operations {
+			if operation.Type == "buy" {
+				outputElement := stockAccountService.Buy(operation)
+				outputLine = append(outputLine, outputElement)
+			} else if operation.Type == "sell" {
+				outputElement := stockAccountService.Sell(operation)
+				outputLine = append(outputLine, outputElement)
+			}
+		}
+		output = append(output, outputLine)
+		stockAccountService.GetBalance()
 	}
+
+	serializedOutput, _ := json.Marshal(output)
+	fmt.Println("output serialized:", string(serializedOutput))
+
+	fmt.Println("output stdout:")
+	fmt.Println(pkg.ParseOutputLines(output))
+	
 }
-
-func ReadLines(reader *bufio.Reader) (serializedLines []string) {
-	for {
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			log.Fatal(err)
-		}
-		if len(strings.TrimSpace(line)) == 0 {
-			break
-		}
-		serializedLines = append(serializedLines, line)
-	}
-	return
-}
-
-func ParseLines(serializedLines []string) (lines []domain.InputLine, err error) {
-	segmentLineArr := []domain.InputLine{}
-	serializedArray := ""
-	for _, serializedLine := range serializedLines {
-		if strings.Contains(serializedLine, "]") {
-			serializedArray += serializedLine
-			fmt.Println(strings.Replace(serializedArray, "\n", "", -1))
-			err = json.Unmarshal([]byte(serializedArray), &segmentLineArr)
-			lines = append(lines, segmentLineArr...)
-			serializedArray = ""
-		} else {
-			serializedArray += serializedLine
-		}
-	}
-	return
-}
-
-/*
-fmt.Println("input text:")
-	reader := bufio.NewReader(os.Stdin)
-
-	var lines []string
-	for {
-		// read line from stdin using newline as separator
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// if line is empty, break the loop
-		if len(strings.TrimSpace(line)) == 0 {
-			break
-		}
-
-		//append the line to a slice
-		lines = append(lines, line)
-	}
-
-	//print out all the lines
-	println(len(lines))
-	rawInput := ""
-	serializedArray := ""
-
-	for _, eachLine := range lines {
-		if strings.Contains(eachLine, "]") {
-			serializedArray += eachLine
-			fmt.Println("output element:")
-			fmt.Println(strings.Replace(serializedArray, "\n", "", -1))
-			serializedArray = ""
-		} else {
-			rawInput += eachLine
-			serializedArray += eachLine
-		}
-		rawInput += eachLine
-	}
-	outputString := strings.Replace(rawInput, "\n", "", -1)
-	fmt.Println("output full:")
-	fmt.Println(outputString)
-*/

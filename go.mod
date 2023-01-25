@@ -1,3 +1,3 @@
-module github.com/diegoalves0688/challenge
+module challenge
 
 go 1.18

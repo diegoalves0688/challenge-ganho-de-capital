@@ -1,7 +1,7 @@
 package domain
 
-type InputLine struct {
-	Operation string  `json:"operation"`
-	UnitCost  float64 `json:"unit-cost"`
-	Quantity  int64   `json:"quantity"`
+type InputOperation struct {
+	Type     string  `json:"operation"`
+	UnitCost float64 `json:"unit-cost"`
+	Quantity float64 `json:"quantity"`
 }
