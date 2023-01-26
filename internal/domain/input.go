@@ -1,7 +1,14 @@
 package domain
 
-type InputOperation struct {
-	Type     string  `json:"operation"`
-	UnitCost float64 `json:"unit-cost"`
-	Quantity float64 `json:"quantity"`
+type OperationInput struct {
+	Type     OperationType `json:"operation"`
+	UnitCost float64       `json:"unit-cost"`
+	Quantity float64       `json:"quantity"`
 }
+
+type OperationType string
+
+const (
+	BuyOperationType  OperationType = "buy"
+	SellOperationType OperationType = "sell"
+)

@@ -2,13 +2,12 @@ package service
 
 import (
 	"challenge/internal/domain"
-	"fmt"
 )
 
 type StockAccount interface {
-	Sell(domain.InputOperation) (output domain.OutputLine)
-	Buy(domain.InputOperation) (output domain.OutputLine)
-	GetBalance()
+	ProccessOperations(operations []domain.OperationInput) (outputLine []domain.OperationOutput)
+	Sell(domain.OperationInput) (output domain.OperationOutput)
+	Buy(domain.OperationInput) (output domain.OperationOutput)
 }
 
 type StockAccountService struct {
@@ -19,7 +18,22 @@ func NewStockAccountService(stockAccount *domain.StockAccount) StockAccount {
 	return &StockAccountService{StockAccount: stockAccount}
 }
 
-func (sa *StockAccountService) Sell(operation domain.InputOperation) (output domain.OutputLine) {
+func (sa *StockAccountService) ProccessOperations(operations []domain.OperationInput) (outputLine []domain.OperationOutput){
+	for _, operation := range operations {
+		switch operation.Type {
+		case domain.BuyOperationType:
+			outputElement := sa.Buy(operation)
+			outputLine = append(outputLine, outputElement)
+		case domain.SellOperationType:
+			outputElement := sa.Sell(operation)
+			outputLine = append(outputLine, outputElement)
+		default:
+		}
+	}
+	return
+}
+
+func (sa *StockAccountService) Sell(operation domain.OperationInput) (output domain.OperationOutput) {
 	sa.StockAccount.StockQuantity -= operation.Quantity
 
 	if hasLoss(sa.StockAccount, operation) {
@@ -42,7 +56,7 @@ func (sa *StockAccountService) Sell(operation domain.InputOperation) (output dom
 	return
 }
 
-func (sa *StockAccountService) Buy(operation domain.InputOperation) (output domain.OutputLine) {
+func (sa *StockAccountService) Buy(operation domain.OperationInput) (output domain.OperationOutput) {
 	sa.StockAccount.WeightedAveragePrice = WeightedAveragePrice(sa.StockAccount.StockQuantity,
 		sa.StockAccount.WeightedAveragePrice, operation.Quantity, operation.UnitCost)
 
@@ -50,21 +64,16 @@ func (sa *StockAccountService) Buy(operation domain.InputOperation) (output doma
 	return
 }
 
-func (sa *StockAccountService) GetBalance() {
-	fmt.Println("StockAccount.StockQuantity: ", sa.StockAccount.StockQuantity)
-	fmt.Println("StockAccount.WeightedAveragePrice: ", sa.StockAccount.WeightedAveragePrice)
-	fmt.Println("StockAccount.Loss: ", sa.StockAccount.Loss)
-}
-
-func WeightedAveragePrice(currentStockQuantity float64, currentWeightedAverege float64, purchasedStockQuantity float64, purchaseAmount float64) float64 {
+func WeightedAveragePrice(currentStockQuantity float64, currentWeightedAverege float64,
+	purchasedStockQuantity float64, purchaseAmount float64) float64 {
 	return ((currentStockQuantity * currentWeightedAverege) + (purchasedStockQuantity * purchaseAmount)) / (currentStockQuantity + purchasedStockQuantity)
 }
 
-func hasTax(stockAccount *domain.StockAccount, operation domain.InputOperation) bool {
+func hasTax(stockAccount *domain.StockAccount, operation domain.OperationInput) bool {
 	operationTotalAmount := operation.UnitCost * operation.Quantity
 	return operation.UnitCost > stockAccount.WeightedAveragePrice && operationTotalAmount > 20000
 }
 
-func hasLoss(stockAccount *domain.StockAccount, operation domain.InputOperation) bool {
+func hasLoss(stockAccount *domain.StockAccount, operation domain.OperationInput) bool {
 	return operation.UnitCost < stockAccount.WeightedAveragePrice
 }
