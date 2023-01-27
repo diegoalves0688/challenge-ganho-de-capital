@@ -15,9 +15,20 @@ A arquitetura do projeto foi baseada no layout do repositório [golang-standards
 
  - [Go](https://go.dev/doc/install) versão 1.18+
 
+ ## Dependências
+
+ - [Testify](https://github.com/stretchr/testify): Pacote utilizado para os testes
+
 ## Executando localmente
 
-Com o Go instalado localmente, basta na raiz do repositório, executar o comando abaixo:
+Com o Go instalado localmente, certifique-se que as dependências sejam baixadas, executando o comando abaixo na raíz do projeto:
+
+```
+go mod tidy
+```
+
+
+Agora basta executar o comando abaixo para iniciar a aplicação:
 
 ```
 go run cmd/main.go
