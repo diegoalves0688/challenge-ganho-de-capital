@@ -3,31 +3,27 @@
 Programa de linha de comando (CLI) que calcula o imposto a
 ser pago sobre lucros ou prejuízos de operações no mercado financeiro de ações
 
-# Tecnologia
+## Tecnologia
 
 Projeto escrito em [Go](https://go.dev/) na versão 1.18
 
-# Arquitetura
+## Arquitetura
 
 A arquitetura do projeto foi baseada no layout do repositório [golang-standards](https://github.com/golang-standards/project-layout)
 
-# Requisitos para compilação
+## Requisitos para compilação
 
  - [Go](https://go.dev/doc/install) versão 1.18+
 
-# Requisitos para os testes integrados
+## Executando localmente
 
- - Linux ou Mac
-
-# Executando localmente
-
-Com o Go instalado localmente, basta executar o comando abaixo para iniciar a aplicação:
+Com o Go instalado localmente, basta na raiz do repositório, executar o comando abaixo:
 
 ```
 go run cmd/main.go
 ```
 
-A aplicação irá aguardar o input ser passado, como no exemplo abaixo:
+A aplicação irá aguardar o input ser passado, como no exemplo seguinte:
 
 ```
 [{"operation":"buy", "unit-cost":10.00, "quantity": 10000}]
@@ -40,7 +36,7 @@ Também é possível indicar um arquivo:
 go run cmd/main.go < test/cases/case-1.txt
 ```
 
-# Testes unitários
+## Testes unitários
 
 Para executar os testes unitários utilize o comando a seguir:
 
@@ -48,7 +44,7 @@ Para executar os testes unitários utilize o comando a seguir:
 make unit-tests
 ```
 
-# Testes de integração
+## Testes de integração
 
 Para executar os testes unitários utilize o comando a seguir:
 
