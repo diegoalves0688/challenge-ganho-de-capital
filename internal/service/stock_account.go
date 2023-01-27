@@ -2,6 +2,7 @@ package service
 
 import (
 	"challenge/internal/domain"
+	"math"
 )
 
 type StockAccount interface {
@@ -18,14 +19,14 @@ func NewStockAccountService(stockAccount *domain.StockAccount) StockAccount {
 	return &StockAccountService{StockAccount: stockAccount}
 }
 
-func (sa *StockAccountService) ProccessOperations(operations []domain.OperationInput) (outputLine []domain.OperationOutput){
-	for _, operation := range operations {
-		switch operation.Type {
+func (sa *StockAccountService) ProccessOperations(operations []domain.OperationInput) (outputLine []domain.OperationOutput) {
+	for _, operationInput := range operations {
+		switch operationInput.Type {
 		case domain.BuyOperationType:
-			outputElement := sa.Buy(operation)
+			outputElement := sa.Buy(operationInput)
 			outputLine = append(outputLine, outputElement)
 		case domain.SellOperationType:
-			outputElement := sa.Sell(operation)
+			outputElement := sa.Sell(operationInput)
 			outputLine = append(outputLine, outputElement)
 		default:
 		}
@@ -36,7 +37,7 @@ func (sa *StockAccountService) ProccessOperations(operations []domain.OperationI
 func (sa *StockAccountService) Sell(operation domain.OperationInput) (output domain.OperationOutput) {
 	sa.StockAccount.StockQuantity -= operation.Quantity
 
-	if hasLoss(sa.StockAccount, operation) {
+	if operationHasLoss(sa.StockAccount, operation) {
 		sa.StockAccount.Loss = (sa.StockAccount.WeightedAveragePrice - operation.UnitCost) * operation.Quantity
 	} else {
 		currentProfit := (operation.UnitCost - sa.StockAccount.WeightedAveragePrice) * operation.Quantity
@@ -48,8 +49,8 @@ func (sa *StockAccountService) Sell(operation domain.OperationInput) (output dom
 			currentProfit = 0
 		}
 
-		if hasTax(sa.StockAccount, operation) {
-			output.Tax = (currentProfit / 100) * 20
+		if operationHasTax(sa.StockAccount, operation) {
+			output.Tax = format((currentProfit / 100) * 20)
 		}
 	}
 
@@ -66,14 +67,18 @@ func (sa *StockAccountService) Buy(operation domain.OperationInput) (output doma
 
 func WeightedAveragePrice(currentStockQuantity float64, currentWeightedAverege float64,
 	purchasedStockQuantity float64, purchaseAmount float64) float64 {
-	return ((currentStockQuantity * currentWeightedAverege) + (purchasedStockQuantity * purchaseAmount)) / (currentStockQuantity + purchasedStockQuantity)
+	return format(((currentStockQuantity * currentWeightedAverege) + (purchasedStockQuantity * purchaseAmount)) / (currentStockQuantity + purchasedStockQuantity))
 }
 
-func hasTax(stockAccount *domain.StockAccount, operation domain.OperationInput) bool {
+func operationHasTax(stockAccount *domain.StockAccount, operation domain.OperationInput) bool {
 	operationTotalAmount := operation.UnitCost * operation.Quantity
 	return operation.UnitCost > stockAccount.WeightedAveragePrice && operationTotalAmount > 20000
 }
 
-func hasLoss(stockAccount *domain.StockAccount, operation domain.OperationInput) bool {
+func operationHasLoss(stockAccount *domain.StockAccount, operation domain.OperationInput) bool {
 	return operation.UnitCost < stockAccount.WeightedAveragePrice
+}
+
+func format(tax float64) float64 {
+	return math.Floor(tax*100) / 100
 }

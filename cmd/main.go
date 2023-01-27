@@ -2,8 +2,11 @@ package main
 
 import (
 	"challenge/internal/handler"
+	"challenge/pkg"
+	"fmt"
 )
 
 func main() {
-	handler.NewStockAccountHandlerImpl().ProccessOperations()
+	output := handler.NewStockAccountHandlerImpl().ProccessOperationsList(pkg.ReadLines())
+	fmt.Println(output)
 }

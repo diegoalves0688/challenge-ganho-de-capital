@@ -7,7 +7,7 @@ import (
 	"challenge/internal/domain"
 )
 
-func ParseLines(serializedLines []string) (operationsList [][]domain.OperationInput, err error) {
+func ParseInputLines(serializedLines []string) (operationsList [][]domain.OperationInput, err error) {
 	for _, serializedLine := range serializedLines {
 		operationsLine := []domain.OperationInput{}
 		err = json.Unmarshal([]byte(serializedLine), &operationsLine)
