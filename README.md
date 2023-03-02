@@ -1,7 +1,9 @@
 # Challenge: Ganho de Capital
 
 Programa de linha de comando (CLI) que calcula o imposto a
-ser pago sobre lucros ou prejuízos de operações no mercado financeiro de ações
+ser pago sobre lucros ou prejuízos de operações no mercado financeiro de ações.
+
+[O arquivo completo contendo o caso de uso](ganho_de_capital.pdf)
 
 ## Tecnologia
 
